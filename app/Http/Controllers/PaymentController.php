@@ -5,6 +5,7 @@ use App\Models\Payment;
 use App\Models\Student;
 use App\Models\FeeType;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PaymentController extends Controller
 {
@@ -159,5 +160,18 @@ class PaymentController extends Controller
             'ip' => request()->ip(),
         ]);
         return redirect()->route('payments.index')->with('success', 'Paiement supprimé.');
+    }
+
+    public function receipt(Payment $payment)
+    {
+        $payment->load(['student', 'feeType', 'agent']);
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('payments.show', compact('payment'));
+        return $pdf->download('recu_paiement_'.$payment->id.'.pdf');
+    }
+
+    public function showReceipt(Payment $payment)
+    {
+        $payment->load(['student', 'feeType', 'agent']);
+        return view('payments.receipt', compact('payment'));
     }
 }

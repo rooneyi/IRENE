@@ -20,6 +20,8 @@ Route::middleware('auth')->group(function () {
 
     // Paiements
     Route::resource('payments', PaymentController::class);
+    Route::get('payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payments.receipt');
+    Route::get('payments/{payment}/show-receipt', [PaymentController::class, 'showReceipt'])->name('payments.showReceipt');
 
     // Élèves
     Route::resource('students', StudentController::class);
