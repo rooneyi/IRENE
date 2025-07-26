@@ -19,17 +19,31 @@ Route::middleware('auth')->group(function () {
     Route::get('/user', [AuthController::class, 'userDashboard'])->name('user.dashboard');
 
     // Paiements
-    Route::resource('payments', PaymentController::class)->except(['destroy']);
+    Route::resource('payments', PaymentController::class);
 
     // Élèves
-    Route::resource('students', StudentController::class)->except(['destroy']);
+    Route::resource('students', StudentController::class);
+    Route::post('students/import', [StudentController::class, 'import'])->name('students.import');
+    Route::get('students/export', [StudentController::class, 'export'])->name('students.export');
 
     // Utilisateurs
-    Route::resource('users', UserController::class)->except(['destroy']);
+    Route::resource('users', UserController::class);
 
     // Paramètres
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::post('settings/backup', [SettingsController::class, 'backup'])->name('settings.backup');
+    Route::post('settings/printer', [SettingsController::class, 'configurePrinter'])->name('settings.printer');
+    Route::post('settings/archive', [SettingsController::class, 'archive'])->name('settings.archive');
+
+    // Paramètres frais annuels
+    Route::get('settings/fees', [\App\Http\Controllers\FeesSettingsController::class, 'edit'])->name('settings.fees.edit');
+    Route::post('settings/fees', [\App\Http\Controllers\FeesSettingsController::class, 'update'])->name('settings.fees.update');
+    // Mise à jour des frais annuels dans la page paramètres
+    Route::post('settings/fees', [\App\Http\Controllers\SettingsController::class, 'updateFees'])->name('settings.fees.update');
 
     // Journal / Logs
     Route::get('logs', [LogController::class, 'index'])->name('logs.index');
+
+    // API pour obtenir les mois non payés d'un élève
+    Route::get('api/eleve/{id}/mois-non-payes', [\App\Http\Controllers\StudentController::class, 'moisNonPayes']);
 });

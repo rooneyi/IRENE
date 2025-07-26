@@ -1,51 +1,39 @@
-@extends('base')
-@section('title', 'Login')
-@section('content')
-<!--
-  This example requires updating your template:
-
-  ```
-  <html class="h-full bg-white">
-  <body class="h-full">
-  ```
--->
-<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-{{--        <img src="" alt="Your Company" class="mx-auto h-10 w-auto" />--}}
-        <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Connectez vous Sur Payement Management System</h2>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion - Administration</title>
+    @vite('resources/css/app.css')
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-4xl flex shadow-2xl rounded-3xl overflow-hidden border border-gray-200">
+        <!-- Colonne gauche : Logo -->
+        <div class="hidden md:flex flex-col justify-center items-center bg-white w-1/2 p-10">
+            <img src="/build/assets/logo.png" alt="Logo" class="w-32 h-32 mb-6 drop-shadow-lg">
+            <h2 class="text-3xl font-extrabold text-blue-600 mb-2 tracking-tight">Bienvenue</h2>
+            <p class="text-blue-400 text-lg text-center">Connectez-vous à votre espace d'administration</p>
+        </div>
+        <!-- Colonne droite : Formulaire -->
+        <div class="flex-1 bg-blue-50 flex flex-col justify-center p-10">
+            <h1 class="text-2xl font-bold text-blue-700 mb-6 text-center md:text-left">Connexion</h1>
+            @if(session('error'))
+                <div class="mb-4 bg-red-100 border-l-4 border-red-300 text-red-500 px-4 py-3 rounded">
+                    {{ session('error') }}
+                </div>
+            @endif
+            <form method="POST" action="{{ route('login') }}" class="space-y-6">
+                @csrf
+                <div>
+                    <label class="block text-blue-700 font-semibold mb-1">Email</label>
+                    <input type="email" name="email" required autofocus class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-200 focus:outline-none bg-white">
+                </div>
+                <div>
+                    <label class="block text-blue-700 font-semibold mb-1">Mot de passe</label>
+                    <input type="password" name="password" required class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-200 focus:outline-none bg-white">
+                </div>
+                <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition">Se connecter</button>
+            </form>
+        </div>
     </div>
-    @if($errors->any())
-        <div class="error">{{$errors->first()}}</div>
-    @endif
-    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form action="{{ route('login') }}" method="POST" class="space-y-6 border-1 border-gray-300 bg-white px-6 py-8 shadow-md rounded-lg">
-            @csrf
-            <div>
-                <label for="email" class="block text-sm/6 font-medium text-gray-900">Nom d'utilisateurs </label>
-                <div class="mt-2">
-                    <input id="email" type="email" name="email" required autocomplete="email" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
-                </div>
-            </div>
-
-            <div>
-                <div class="flex items-center justify-between">
-                    <label for="password" class="block text-sm/6 font-medium text-gray-900">Mot de passe </label>
-                </div>
-                <div class="mt-2">
-                    <input id="password" type="password" name="password" required autocomplete="current-password" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
-                </div>
-            </div>
-
-            <div class="gap-2 flex items-center justify-between">
-                <button type="submit" name="role" value="user" class="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Connexion Utilisateur </button>
-                <button type="submit" name="role" value="admin" class="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Connexion Admin</button>
-
-            </div>
-        </form>
-
-
-    </div>
-</div>
-@endsection
-
-
+</body>
+</html>

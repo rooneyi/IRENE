@@ -18,6 +18,8 @@ class Student extends Model
         'adresse',
         'tuteur',
         'telephone_tuteur',
+        'total_a_payer',
+        'mois_repartition',
     ];
 
     public function payments()
@@ -25,4 +27,3 @@ class Student extends Model
         return $this->hasMany(Payment::class, 'eleve_id');
     }
 }
-

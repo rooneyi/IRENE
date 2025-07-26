@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,7 +26,7 @@ class AuthController extends Controller
                 return redirect()->route('user.dashboard');
             }
         }
-        return back()->withErrors(['email' => 'Identifiants invalides'])->withInput();
+        return back()->withErrors(['email' => 'Email ou mot de passe Incorrecte'])->withInput();
     }
 
     public function logout()
@@ -41,15 +42,15 @@ class AuthController extends Controller
         }
 
         // Statistiques globales
-        $totalPaiements = \App\Models\Payment::count();
-        $tempsMoyenTraitement = \App\Models\Payment::avg('created_at') ? 2 : 0; // À remplacer par une vraie logique si tu as un champ de durée
+        $totalPaiements = Payment::count();
+        $tempsMoyenTraitement = Payment::avg('created_at') ? 2 : 0; // À remplacer par une vraie logique si tu as un champ de durée
         $tauxErreurs = 0; // À calculer selon ta logique (ex : nombre de logs d'erreur / total paiements)
-        $tauxRecouvrement = \App\Models\Payment::where('statut', 'Payé')->count() > 0 ?
-            round(\App\Models\Payment::where('statut', 'Payé')->count() / max(1, $totalPaiements) * 100, 2) : 0;
+        $tauxRecouvrement = Payment::where('statut', 'Payé')->count() > 0 ?
+            round(Payment::where('statut', 'Payé')->count() / max(1, $totalPaiements) * 100, 2) : 0;
         $satisfactionParentale = 4.5; // À remplacer par une vraie moyenne si tu as un système d'avis
 
         // Graphique : paiements par mois
-        $paiementsParMois = \App\Models\Payment::selectRaw('DATE_FORMAT(date_paiement, "%Y-%m") as mois, COUNT(*) as total')
+        $paiementsParMois = Payment::selectRaw('DATE_FORMAT(date_paiement, "%Y-%m") as mois, COUNT(*) as total')
             ->groupBy('mois')
             ->orderBy('mois')
             ->pluck('total', 'mois');
@@ -73,6 +74,41 @@ class AuthController extends Controller
             $alertes[] = "$incomplets paiement(s) incomplet(s).";
         }
 
+        // Récupérer le montant total à payer et la répartition (même pour tous les élèves)
+        $totalAPayer = \App\Models\Student::query()->value('total_a_payer');
+        $moisRepartition = \App\Models\Student::query()->value('mois_repartition');
+        // Récapitulatif par élève : total à payer, payé, reste, mois couverts
+        $eleves = \App\Models\Student::with('payments')->get();
+        // Synthèse des mois payés et restants par élève
+        $moisEtudes = \App\Models\Setting::where('key', 'mois_etudes')->value('value') ?? [];
+        $recapPaiementEleves = $eleves->map(function($eleve) use ($totalAPayer, $moisRepartition, $moisEtudes) {
+            $totalPaye = $eleve->payments()->where('statut', 'Payé')->sum('montant');
+            $resteAPayer = max(0, $totalAPayer - $totalPaye);
+            $moisCouverts = $totalAPayer > 0 ? floor($totalPaye / ($totalAPayer / max(1, $moisRepartition))) : 0;
+            $moisRestants = max(0, $moisRepartition - $moisCouverts);
+            // Calcul des mois payés et restants
+            $moisPayes = [];
+            foreach ($eleve->payments as $p) {
+                if ($p->mois_payes) {
+                    $moisPayes = array_merge($moisPayes, json_decode($p->mois_payes, true));
+                }
+            }
+            $moisPayes = array_unique($moisPayes);
+            $moisRestantsList = array_values(array_diff($moisEtudes, $moisPayes));
+            return [
+                'nom' => $eleve->nom,
+                'prenom' => $eleve->prenom,
+                'classe' => $eleve->classe,
+                'total_a_payer' => $totalAPayer,
+                'total_paye' => $totalPaye,
+                'reste_a_payer' => $resteAPayer,
+                'mois_couverts' => $moisCouverts,
+                'mois_restants' => $moisRestants,
+                'mois_payes' => $moisPayes,
+                'mois_restants_list' => $moisRestantsList,
+            ];
+        });
+
         return view('dashboard', compact(
             'totalPaiements',
             'tempsMoyenTraitement',
@@ -80,7 +116,10 @@ class AuthController extends Controller
             'tauxRecouvrement',
             'satisfactionParentale',
             'graphData',
-            'alertes'
+            'alertes',
+            'recapPaiementEleves',
+            'totalAPayer',
+            'moisRepartition'
         ));
     }
 

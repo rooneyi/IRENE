@@ -17,6 +17,8 @@ class Payment extends Model
         'agent_encaisseur',
         'numero_recu',
         'remarque',
+        'mois_payes',
+        'devise', // Ajout du champ devise
     ];
 
     public function student()
@@ -34,4 +36,3 @@ class Payment extends Model
         return $this->belongsTo(User::class, 'agent_encaisseur');
     }
 }
-

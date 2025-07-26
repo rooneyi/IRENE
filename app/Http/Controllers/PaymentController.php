@@ -80,6 +80,22 @@ class PaymentController extends Controller
             'remarque' => $request->remarque,
         ]);
 
+        // Attribution automatique des mois payés
+        $student = Student::findOrFail($request->eleve_id);
+        $moisEtudes = \App\Models\Setting::where('key', 'mois_etudes')->value('value') ?? [];
+        $moisPayes = [];
+        foreach ($student->payments as $p) {
+            if ($p->mois_payes) {
+                $moisPayes = array_merge($moisPayes, json_decode($p->mois_payes, true));
+            }
+        }
+        $moisNonPayes = array_values(array_diff($moisEtudes, $moisPayes));
+        $montantMensuel = $student->mois_repartition > 0 ? $student->total_a_payer / $student->mois_repartition : 0;
+        $nbMois = ($montantMensuel > 0) ? floor($request->montant / $montantMensuel) : 0;
+        $moisPourCePaiement = array_slice($moisNonPayes, 0, $nbMois);
+        $payment->mois_payes = json_encode($moisPourCePaiement);
+        $payment->save();
+
         // Journaliser l'action
         \App\Models\Log::create([
             'user_id' => auth()->id(),
@@ -88,7 +104,7 @@ class PaymentController extends Controller
             'ip' => $request->ip(),
         ]);
 
-        return redirect()->route('payments.index')->with('success', 'Paiement enregistré avec succès.');
+        return redirect()->route('payments.show', $payment->id)->with('success', 'Paiement enregistré avec succès. Vous pouvez imprimer le reçu.');
     }
 
     public function show(Payment $payment)
