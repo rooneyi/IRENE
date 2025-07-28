@@ -15,7 +15,8 @@ class StudentController extends Controller
 
     public function create()
     {
-        return view('students.create');
+        $sections = \App\Models\FeeType::all();
+        return view('students.create', compact('sections'));
     }
 
     public function store(Request $request)
@@ -23,34 +24,32 @@ class StudentController extends Controller
         $request->validate([
             'nom' => 'required',
             'prenom' => 'required',
-            'postnom' => 'required',
             'classe' => 'required',
             'sexe' => 'required',
             'date_naissance' => 'required',
             'telephone' => 'required',
             'adresse' => 'required',
-            'statut' => 'required',
+            'section_id' => 'required|exists:fee_types,id',
         ]);
 
         // Génération du matricule
         $lastId = \App\Models\Student::max('id') + 1;
         $matricule = strtoupper(substr($request->nom,0,1))
             .strtoupper(substr($request->prenom,0,1))
-            .strtoupper(substr($request->postnom,0,1))
             .date('Y')
             .str_pad($lastId, 4, '0', STR_PAD_LEFT);
-
+        $section = \App\Models\FeeType::find($request->section_id);
         $student = new \App\Models\Student();
         $student->nom = $request->nom;
         $student->prenom = $request->prenom;
-        $student->postnom = $request->postnom;
         $student->matricule = $matricule;
         $student->classe = $request->classe;
         $student->sexe = $request->sexe;
         $student->date_naissance = $request->date_naissance;
         $student->telephone = $request->telephone;
         $student->adresse = $request->adresse;
-        $student->statut = $request->statut;
+        $student->total_a_payer = $section ? $section->montant_par_defaut : 0;
+        $student->section_id = $section ? $section->id : null;
         $student->save();
 
         return redirect()->route('students.index')->with('success', 'Élève ajouté avec succès !');

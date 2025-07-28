@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\Setting;
+use App\Models\FeeType;
 
 class FeesSettingsController extends Controller
 {
@@ -12,7 +13,8 @@ class FeesSettingsController extends Controller
         $totalAPayer = Student::query()->value('total_a_payer');
         $moisRepartition = Student::query()->value('mois_repartition');
         $fraisInscription = Setting::where('key', 'frais_inscription')->value('value');
-        return view('settings.fees', compact('totalAPayer', 'moisRepartition', 'fraisInscription'));
+        $sections = FeeType::all();
+        return view('settings.fees', compact('totalAPayer', 'moisRepartition', 'fraisInscription', 'sections'));
     }
 
     public function update(Request $request)
@@ -21,6 +23,9 @@ class FeesSettingsController extends Controller
             'frais_inscription' => 'required|numeric|min:0',
             'total_a_payer' => 'required|numeric|min:0',
             'mois_repartition' => 'required|integer|min:1|max:12',
+            'sections' => 'array',
+            'sections.*.name' => 'required|string',
+            'sections.*.montant' => 'required|numeric|min:0',
         ]);
         // Met à jour pour tous les élèves
         Student::query()->update([
@@ -32,6 +37,21 @@ class FeesSettingsController extends Controller
             ['key' => 'frais_inscription'],
             ['value' => $request->frais_inscription]
         );
+        // Suppression des anciennes sections qui ne sont plus dans le formulaire
+        $nomsForm = collect($request->sections)->pluck('name')->toArray();
+        FeeType::whereNotIn('nom', $nomsForm)->delete();
+        // Mise à jour ou création des sections
+        if ($request->has('sections')) {
+            foreach ($request->sections as $section) {
+                FeeType::updateOrCreate(
+                    ['nom' => $section['name']],
+                    [
+                        'description' => $section['description'] ?? '',
+                        'montant_par_defaut' => $section['montant'],
+                    ]
+                );
+            }
+        }
         return redirect()->route('settings.fees.edit')->with('success', 'Configuration mise à jour avec succès.');
     }
 }

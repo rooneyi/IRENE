@@ -16,8 +16,6 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-        $role = $request->input('role');
-        $credentials['role'] = $role;
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             if ($user->role === 'admin') {
@@ -37,17 +35,15 @@ class AuthController extends Controller
 
     public function adminDashboard()
     {
-        if (auth()->user()->role !== 'admin') {
-            return redirect()->route('user.dashboard');
+        if (!auth()->check() || auth()->user()->role !== 'admin') {
+            return redirect()->route('login')->with('error', 'Accès refusé.');
         }
 
         // Statistiques globales
-        $totalPaiements = Payment::count();
-        $tempsMoyenTraitement = Payment::avg('created_at') ? 2 : 0; // À remplacer par une vraie logique si tu as un champ de durée
-        $tauxErreurs = 0; // À calculer selon ta logique (ex : nombre de logs d'erreur / total paiements)
-        $tauxRecouvrement = Payment::where('statut', 'Payé')->count() > 0 ?
-            round(Payment::where('statut', 'Payé')->count() / max(1, $totalPaiements) * 100, 2) : 0;
-        $satisfactionParentale = 4.5; // À remplacer par une vraie moyenne si tu as un système d'avis
+        $nbEleves = \App\Models\Student::count();
+        $nbPaiements = \App\Models\Payment::count();
+        $montantTotal = \App\Models\Payment::where('statut', 'Payé')->sum('montant');
+        $nbClasses = \App\Models\Student::distinct('classe')->count('classe');
 
         // Graphique : paiements par mois
         $paiementsParMois = Payment::selectRaw('DATE_FORMAT(date_paiement, "%Y-%m") as mois, COUNT(*) as total')
@@ -110,11 +106,10 @@ class AuthController extends Controller
         });
 
         return view('dashboard', compact(
-            'totalPaiements',
-            'tempsMoyenTraitement',
-            'tauxErreurs',
-            'tauxRecouvrement',
-            'satisfactionParentale',
+            'nbEleves',
+            'nbPaiements',
+            'montantTotal',
+            'nbClasses',
             'graphData',
             'alertes',
             'recapPaiementEleves',

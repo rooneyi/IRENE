@@ -2,31 +2,27 @@
 
 @section('content')
     <div class="container mx-auto px-8 py-8">
-        <h1 class="text-2xl font-bold mb-8 text-blue-700">Tableau de bord</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <h1 class="text-2xl font-bold mb-8 text-blue-700">Statistiques globales</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-white rounded-lg shadow p-6 text-center hover:bg-gray-100 transition-colors">
-                <h3 class="text-blue-700 font-semibold mb-2">Total paiements</h3>
-                <span class="text-2xl font-bold text-blue-700">{{ $totalPaiements }}</span>
+                <h3 class="text-blue-700 font-semibold mb-2">Nombre d'élèves</h3>
+                <span class="text-2xl font-bold text-blue-700">{{ $nbEleves ?? '-' }}</span>
             </div>
             <div class="bg-white rounded-lg shadow p-6 text-center hover:bg-gray-100 transition-colors">
-                <h3 class="text-blue-700 font-semibold mb-2">Temps moyen de traitement</h3>
-                <span class="text-2xl font-bold text-blue-700">{{ $tempsMoyenTraitement }} min</span>
+                <h3 class="text-blue-700 font-semibold mb-2">Nombre de paiements</h3>
+                <span class="text-2xl font-bold text-blue-700">{{ $nbPaiements ?? '-' }}</span>
             </div>
             <div class="bg-white rounded-lg shadow p-6 text-center hover:bg-gray-100 transition-colors">
-                <h3 class="text-blue-700 font-semibold mb-2">Taux d’erreurs</h3>
-                <span class="text-2xl font-bold text-blue-700">{{ $tauxErreurs }}%</span>
+                <h3 class="text-blue-700 font-semibold mb-2">Montant total encaissé</h3>
+                <span class="text-2xl font-bold text-blue-700">{{ number_format($montantTotal ?? 0, 0, ',', ' ') }} F</span>
             </div>
             <div class="bg-white rounded-lg shadow p-6 text-center hover:bg-gray-100 transition-colors">
-                <h3 class="text-blue-700 font-semibold mb-2">Taux de recouvrement</h3>
-                <span class="text-2xl font-bold text-blue-700">{{ $tauxRecouvrement }}%</span>
-            </div>
-            <div class="bg-white rounded-lg shadow p-6 text-center hover:bg-gray-100 transition-colors">
-                <h3 class="text-blue-700 font-semibold mb-2">Satisfaction parentale</h3>
-                <span class="text-2xl font-bold text-blue-700">{{ $satisfactionParentale }}/5</span>
+                <h3 class="text-blue-700 font-semibold mb-2">Nombre de classes</h3>
+                <span class="text-2xl font-bold text-blue-700">{{ $nbClasses ?? '-' }}</span>
             </div>
         </div>
         <div class="bg-white rounded-lg shadow p-6 mb-8 hover:bg-gray-100 transition-colors">
-            <h2 class="text-xl font-semibold mb-4 text-blue-700">Graphiques mensuels / par classe</h2>
+            <h2 class="text-xl font-semibold mb-4 text-blue-700">Graphique des paiements par mois</h2>
             <div class="h-64 flex items-center justify-center">
                 @if(isset($graphData))
                     <canvas id="paiementsChart"></canvas>
