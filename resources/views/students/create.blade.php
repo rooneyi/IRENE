@@ -41,8 +41,9 @@
             <div>
                 <label class="block mb-2 text-blue-700 font-semibold">Classe</label>
                 <select name="classe" id="classe-select" required class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white text-blue-900">
-                    <option value="">-- Sélectionner la classe --</option>
-                </select>
+    <option value="">-- Sélectionner la classe --</option>
+</select>
+<div id="classe-location" class="mt-2 text-green-700 font-semibold text-sm" style="display:none;"></div>
             </div>
             <div>
                 <label class="block mb-2 text-blue-700 font-semibold">Sexe</label>
@@ -74,5 +75,10 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/section_classes.js') }}"></script>
+
+<script>
+window.SECTION_KEY_MAP = @json($sections->mapWithKeys(fn($s) => [$s->id => $s->description])->toArray());
+</script>
+<script src="{{ asset('js/eleve_section_classe.js') }}"></script>
+
 @endpush

@@ -64,7 +64,8 @@ class StudentController extends Controller
 
     public function edit(Student $student)
     {
-        return view('students.edit', compact('student'));
+        $sections = \App\Models\FeeType::all();
+        return view('students.edit', compact('student', 'sections'));
     }
 
     public function update(Request $request, Student $student)

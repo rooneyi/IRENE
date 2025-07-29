@@ -11,28 +11,28 @@ class FeeTypeSeeder extends Seeder
         FeeType::insert([
             [
                 'nom' => 'Maternelle',
-                'description' => 'Section maternelle',
+                'description' => 'maternelle',
                 'montant_par_defaut' => 40,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'nom' => 'Primaire',
-                'description' => 'Section primaire',
+                'description' => 'primaire',
                 'montant_par_defaut' => 45,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'nom' => 'Secondaire général',
-                'description' => 'Section secondaire générale',
+                'description' => 'secondaire_generale',
                 'montant_par_defaut' => 65,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'nom' => 'Technique',
-                'description' => 'Section technique',
+                'description' => 'technique',
                 'montant_par_defaut' => 95,
                 'created_at' => now(),
                 'updated_at' => now(),

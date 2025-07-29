@@ -5,6 +5,8 @@
     <title>Dashboard d'administration</title>
     @vite('resources/css/app.css')
 </head>
+@stack('scripts')
+</body>
 <body class="bg-gray-100 font-sans min-h-screen">
     <div class="flex">
         <!-- Sidebar -->

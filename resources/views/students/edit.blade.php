@@ -25,8 +25,23 @@
                 <input type="text" name="prenom" value="{{ old('prenom', $student->prenom) }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 bg-gray-50 text-gray-900" />
             </div>
             <div>
-                <label class="block mb-2 text-gray-700 font-semibold">Classe</label>
-                <input type="text" name="classe" value="{{ old('classe', $student->classe) }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 bg-gray-50 text-gray-900" />
+                <label class="block mb-2 text-blue-700 font-semibold">Section</label>
+                <select name="section_id" id="section-select" required class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white text-blue-900">
+                    <option value="">-- Sélectionner --</option>
+                    @foreach($sections as $section)
+                        <option value="{{ $section->id }}" @if(old('section_id', $student->section_id) == $section->id) selected @endif>
+                            {{ $section->nom }} : {{ $section->montant_par_defaut }}$
+                        </option>
+                    @endforeach
+                </select>
+                
+            </div>
+            <div>
+                <label class="block mb-2 text-blue-700 font-semibold">Classe</label>
+                <select name="classe" id="classe-select" required class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white text-blue-900">
+    <option value="">-- Sélectionner la classe --</option>
+</select>
+<div id="classe-location" class="mt-2 text-green-700 font-semibold text-sm" style="display:none;"></div>
             </div>
             <div>
                 <label class="block mb-2 text-pink-600 font-semibold">Sexe</label>
@@ -56,3 +71,37 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+window.SECTION_KEY_MAP = @json($sections->mapWithKeys(fn($s) => [$s->id => $s->description])->toArray());
+</script>
+<script src="{{ asset('js/eleve_section_classe.js') }}"></script>
+<script>
+// Préselection dynamique de la classe si déjà existante
+// (après que le JS externe ait rempli les options)
+document.addEventListener('DOMContentLoaded', function() {
+    var sectionSelect = document.getElementById('section-select');
+    var classeSelect = document.getElementById('classe-select');
+    var selectedSection = sectionSelect.value;
+    var selectedClasse = @json(old('classe', $student->classe));
+    if (selectedSection) {
+        // Déclenche la mise à jour dynamique
+        var event = new Event('change');
+        sectionSelect.dispatchEvent(event);
+        // Attendre que le JS externe ait rempli les options, puis sélectionner la bonne classe
+        setTimeout(function() {
+            if (selectedClasse) {
+                for (let opt of classeSelect.options) {
+                    if (opt.value == selectedClasse) {
+                        opt.selected = true;
+                        break;
+                    }
+                }
+            }
+        }, 200);
+    }
+});
+</script>
+@endpush
+
