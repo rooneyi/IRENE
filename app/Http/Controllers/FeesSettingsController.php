@@ -37,19 +37,36 @@ class FeesSettingsController extends Controller
             ['key' => 'frais_inscription'],
             ['value' => $request->frais_inscription]
         );
-        // Suppression des anciennes sections qui ne sont plus dans le formulaire
-        $nomsForm = collect($request->sections)->pluck('name')->toArray();
-        FeeType::whereNotIn('nom', $nomsForm)->delete();
+        // Enregistre aussi total_a_payer et mois_repartition dans settings
+        Setting::updateOrCreate(
+            ['key' => 'total_a_payer'],
+            ['value' => $request->total_a_payer]
+        );
+        Setting::updateOrCreate(
+            ['key' => 'mois_repartition'],
+            ['value' => $request->mois_repartition]
+        );
+        // Suppression des sections supprimées côté front
+        $idsForm = collect($request->sections)->pluck('id')->filter()->toArray();
+        if (!empty($idsForm)) {
+            FeeType::whereNotIn('id', $idsForm)->delete();
+        }
         // Mise à jour ou création des sections
         if ($request->has('sections')) {
             foreach ($request->sections as $section) {
-                FeeType::updateOrCreate(
-                    ['nom' => $section['name']],
-                    [
-                        'description' => $section['description'] ?? '',
+                if (!empty($section['id'])) {
+                    // Modification
+                    FeeType::where('id', $section['id'])->update([
+                        'nom' => $section['name'],
                         'montant_par_defaut' => $section['montant'],
-                    ]
-                );
+                    ]);
+                } else {
+                    // Création
+                    FeeType::create([
+                        'nom' => $section['name'],
+                        'montant_par_defaut' => $section['montant'],
+                    ]);
+                }
             }
         }
         return redirect()->route('settings.fees.edit')->with('success', 'Configuration mise à jour avec succès.');

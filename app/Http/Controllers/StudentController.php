@@ -32,24 +32,31 @@ class StudentController extends Controller
             'section_id' => 'required|exists:fee_types,id',
         ]);
 
+        // Définir le montant selon la section choisie
+        $montants = [
+            'maternelle' => 40,
+            'primaire' => 45,
+            'secondaire_generale' => 65,
+            'technique' => 95,
+        ];
+
         // Génération du matricule
         $lastId = \App\Models\Student::max('id') + 1;
         $matricule = strtoupper(substr($request->nom,0,1))
             .strtoupper(substr($request->prenom,0,1))
             .date('Y')
             .str_pad($lastId, 4, '0', STR_PAD_LEFT);
-        $section = \App\Models\FeeType::find($request->section_id);
         $student = new \App\Models\Student();
         $student->nom = $request->nom;
         $student->prenom = $request->prenom;
         $student->matricule = $matricule;
         $student->classe = $request->classe;
+        $student->section_id = $request->section_id;
         $student->sexe = $request->sexe;
         $student->date_naissance = $request->date_naissance;
         $student->telephone = $request->telephone;
         $student->adresse = $request->adresse;
-        $student->total_a_payer = $section ? $section->montant_par_defaut : 0;
-        $student->section_id = $section ? $section->id : null;
+        $student->total_a_payer = $montants[$request->section_id] ?? 0;
         $student->save();
 
         return redirect()->route('students.index')->with('success', 'Élève ajouté avec succès !');
@@ -67,8 +74,17 @@ class StudentController extends Controller
             'prenom' => 'required',
             'matricule' => 'required|unique:students,matricule,'.$student->id,
             'classe' => 'required',
+            'section_id' => 'required',
         ]);
-        $student->update($request->all());
+        $montants = [
+            'maternelle' => 40,
+            'primaire' => 45,
+            'secondaire_generale' => 65,
+            'technique' => 95,
+        ];
+        $student->fill($request->all());
+        $student->total_a_payer = $montants[$request->section_id] ?? 0;
+        $student->save();
         return redirect()->route('students.index')->with('success', 'Élève modifié avec succès.');
     }
 

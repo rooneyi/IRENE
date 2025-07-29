@@ -34,21 +34,33 @@
                 @php $hasSection = isset($sections) && count($sections) > 0; @endphp
                 @if($hasSection)
                     @foreach($sections as $i => $section)
-                        <div class="mb-4 border p-4 rounded bg-gray-50 section-block">
+                        <div class="mb-4 border p-4 rounded bg-gray-50 section-block" id="section-block-{{ $i }}">
                             <label class="block text-blue-700 font-semibold mb-2">Nom de la section</label>
-                            <input type="text" name="sections[{{ $i }}][name]" value="{{ old('sections.'.$i.'.name', $section->nom) }}" class="w-full border rounded px-3 py-2 mb-2" required>
-
+                            <input type="hidden" name="sections[{{ $i }}][id]" value="{{ $section->id }}">
+                            <select name="sections[{{ $i }}][name]" class="w-full border rounded px-3 py-2 mb-2 section-nom" data-index="{{ $i }}" required>
+    <option value="maternelle" @if(old('sections.'.$i.'.name', $section->nom) == 'maternelle') selected @endif>Maternelle</option>
+    <option value="primaire" @if(old('sections.'.$i.'.name', $section->nom) == 'primaire') selected @endif>Primaire</option>
+    <option value="secondaire_generale" @if(old('sections.'.$i.'.name', $section->nom) == 'secondaire_generale') selected @endif>Secondaire général</option>
+    <option value="technique" @if(old('sections.'.$i.'.name', $section->nom) == 'technique') selected @endif>Technique</option>
+</select>
                             <label class="block text-blue-700 font-semibold mb-2">Montant mensuel (USD)</label>
                             <input type="number" name="sections[{{ $i }}][montant]" step="0.01" min="0" value="{{ old('sections.'.$i.'.montant', $section->montant_par_defaut) }}" class="w-full border rounded px-3 py-2 section-montant" required oninput="updateTotalSection({{ $i }})">
 
                             <label class="block text-blue-700 font-semibold mb-2 mt-2">Montant total à payer pour cette section (USD)</label>
                             <input type="number" id="total_section_{{ $i }}" class="w-full border rounded px-3 py-2 bg-gray-100" value="" readonly>
+
+                            <button type="button" class="mt-2 bg-red-600 text-white px-3 py-1 rounded remove-section" onclick="removeSection('section-block-{{ $i }}')">Supprimer</button>
                         </div>
                     @endforeach
                 @else
                     <div class="mb-4 border p-4 rounded bg-gray-50 section-block">
                         <label class="block text-blue-700 font-semibold mb-2">Nom de la section</label>
-                        <input type="text" name="sections[0][name]" class="w-full border rounded px-3 py-2 mb-2" required>
+                        <select name="sections[0][name]" class="w-full border rounded px-3 py-2 mb-2 section-nom" data-index="0" required>
+    <option value="maternelle">Maternelle</option>
+    <option value="primaire">Primaire</option>
+    <option value="secondaire_generale">Secondaire général</option>
+    <option value="technique">Technique</option>
+</select>
 
                         <label class="block text-blue-700 font-semibold mb-2">Montant mensuel (USD)</label>
                         <input type="number" name="sections[0][montant]" step="0.01" min="0" class="w-full border rounded px-3 py-2 section-montant" required oninput="updateTotalSection(0)">
@@ -116,21 +128,60 @@
                 updateTotalSection();
             });
             document.getElementById('add-section').addEventListener('click', function() {
-                var index = document.querySelectorAll('.section-block').length;
+                // Correction : compter toutes les sections existantes et nouvelles pour l'index
+                var index = document.querySelectorAll('.section-block').length + document.querySelectorAll('#new-sections .section-block').length;
                 var newSection = document.createElement('div');
                 newSection.classList.add('mb-4', 'border', 'p-4', 'rounded', 'bg-gray-50', 'section-block');
                 newSection.innerHTML = `
                     <label class=\"block text-blue-700 font-semibold mb-2\">Nom de la section</label>
-                    <input type=\"text\" name=\"sections[${index}][name]\" class=\"w-full border rounded px-3 py-2 mb-2\" required>
+                    <select name=\"sections[${index}][name]\" class=\"w-full border rounded px-3 py-2 mb-2 section-nom\" data-index=\"${index}\" required>\n    <option value=\"maternelle\">Maternelle</option>\n    <option value=\"primaire\">Primaire</option>\n    <option value=\"secondaire_generale\">Secondaire général</option>\n    <option value=\"technique\">Technique</option>\n</select>
                     <label class=\"block text-blue-700 font-semibold mb-2\">Montant mensuel (USD)</label>
                     <input type=\"number\" name=\"sections[${index}][montant]\" step=\"0.01\" min=\"0\" class=\"w-full border rounded px-3 py-2 section-montant\" required oninput=\"updateTotalSection(${index})\">
                     <label class=\"block text-blue-700 font-semibold mb-2 mt-2\">Montant total à payer pour cette section (USD)</label>
                     <input type=\"number\" id=\"total_section_${index}\" class=\"w-full border rounded px-3 py-2 bg-gray-100\" value=\"\" readonly>
+                    <button type=\"button\" class=\"mt-2 bg-red-600 text-white px-3 py-1 rounded remove-section\" onclick=\"removeSection('new-section-block-${index}')\">Supprimer</button>
                 `;
+                newSection.setAttribute('id', 'new-section-block-' + index);
                 document.getElementById('new-sections').appendChild(newSection);
-                // Ajouter l'écouteur sur le nouveau champ
-                newSection.querySelector('.section-montant').addEventListener('input', updateTotalSection);
+                // Correction : ajouter l'écouteur sur le nouveau champ
+                newSection.querySelector('.section-montant').addEventListener('input', function() { updateTotalSection(index); });
+                // Ajout : auto-remplir montant selon section choisie
+                newSection.querySelector('.section-nom').addEventListener('change', function(e) {
+                    var val = e.target.value;
+                    var montant = 0;
+                    if(val === 'maternelle') montant = 40;
+                    else if(val === 'primaire') montant = 45;
+                    else if(val === 'secondaire_generale') montant = 65;
+                    else if(val === 'technique') montant = 95;
+                    newSection.querySelector('.section-montant').value = montant;
+                    updateTotalSection(index);
+                });
             });
+
+            // Ajout : auto-remplir montant selon section choisie pour toutes les sections existantes et par défaut
+            window.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.section-nom').forEach(function(select) {
+                    select.addEventListener('change', function(e) {
+                        var index = select.getAttribute('data-index');
+                        var val = select.value;
+                        var montant = 0;
+                        if(val === 'maternelle') montant = 40;
+                        else if(val === 'primaire') montant = 45;
+                        else if(val === 'secondaire_generale') montant = 65;
+                        else if(val === 'technique') montant = 95;
+                        var montantInput = document.getElementsByName('sections['+index+'][montant]')[0];
+                        if(montantInput) {
+                            montantInput.value = montant;
+                            updateTotalSection(index);
+                        }
+                    });
+                });
+            });
+            function removeSection(id) {
+                var el = document.getElementById(id);
+                if(el) el.remove();
+                updateTotalGeneral();
+            }
         </script>
     </div>
     <div class="bg-white p-10 rounded-xl shadow-lg">

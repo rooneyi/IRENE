@@ -13,6 +13,7 @@ class Student extends Model
         'prenom',
         'matricule',
         'classe',
+        'section_id',
         'date_naissance',
         'sexe',
         'adresse',
@@ -25,5 +26,10 @@ class Student extends Model
     public function payments()
     {
         return $this->hasMany(Payment::class, 'eleve_id');
+    }
+
+    public function section()
+    {
+        return $this->belongsTo(FeeType::class, 'section_id');
     }
 }

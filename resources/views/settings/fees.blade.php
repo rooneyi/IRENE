@@ -26,7 +26,12 @@
                 @foreach($sections as $i => $section)
                     <div class="mb-4 border p-4 rounded bg-gray-50">
                         <label class="block text-blue-700 font-semibold mb-2">Nom de la section</label>
-                        <input type="text" name="sections[{{ $i }}][name]" value="{{ old('sections.'.$i.'.name', $section->nom) }}" class="w-full border rounded px-3 py-2 mb-2" required>
+                        <select name="sections[{{ $i }}][name]" class="w-full border rounded px-3 py-2 mb-2" required>
+    <option value="maternelle" @if(old('sections.'.$i.'.name', $section->nom) == 'maternelle') selected @endif>Maternelle</option>
+    <option value="primaire" @if(old('sections.'.$i.'.name', $section->nom) == 'primaire') selected @endif>Primaire</option>
+    <option value="secondaire_generale" @if(old('sections.'.$i.'.name', $section->nom) == 'secondaire_generale') selected @endif>Secondaire général</option>
+    <option value="technique" @if(old('sections.'.$i.'.name', $section->nom) == 'technique') selected @endif>Technique</option>
+</select>
 
                         <label class="block text-blue-700 font-semibold mb-2">Description</label>
                         <input type="text" name="sections[{{ $i }}][description]" value="{{ old('sections.'.$i.'.description', $section->description) }}" class="w-full border rounded px-3 py-2 mb-2">
