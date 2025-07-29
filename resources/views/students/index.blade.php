@@ -27,7 +27,7 @@
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Classe</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Sexe</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Date de naissance</th>
-                    <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Téléphone</th>
+                    <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Téléphone Tuteur</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Statut</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Actions</th>
                 </tr>
@@ -44,12 +44,12 @@
                         <td class="px-6 py-4 text-gray-800">{{ $student->prenom }}</td>
                         <td class="px-6 py-4 text-gray-700">{{ $student->classe }}</td>
                         <td class="px-6 py-4">
-                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-pink-100 text-pink-700 border border-pink-200">{{ $student->sexe }}</span>
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-pink-100 text-pink-700 border border-pink-200">{{ $student->sexe == 'M' ? 'Masculin' : ($student->sexe == 'F' ? 'Féminin' : '-') }}</span>
                         </td>
                         <td class="px-6 py-4">
                             <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">{{ $student->date_naissance }}</span>
                         </td>
-                        <td class="px-6 py-4 text-gray-700">{{ $student->telephone }}</td>
+                        <td class="px-6 py-4 text-gray-700">{{ $student->telephone_tuteur }}</td>
                         <td class="px-6 py-4">
                             <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">{{ $student->statut }}</span>
                         </td>

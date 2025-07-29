@@ -11,6 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->string('nom');
             $table->string('prenom');
+            $table->string('post_nom');
             $table->string('matricule')->unique();
             $table->string('classe');
             $table->date('date_naissance')->nullable();

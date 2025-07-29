@@ -47,8 +47,8 @@
                 <label class="block mb-2 text-pink-600 font-semibold">Sexe</label>
                 <select name="sexe" required class="w-full border border-pink-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-200 bg-pink-50 text-pink-700">
                     <option value="">-- Sélectionner --</option>
-                    <option value="Masculin" @if(old('sexe', $student->sexe)=='Masculin') selected @endif>Masculin</option>
-                    <option value="Féminin" @if(old('sexe', $student->sexe)=='Féminin') selected @endif>Féminin</option>
+                    <option value="M" @if(old('sexe', $student->sexe)=='M') selected @endif>Masculin</option>
+                    <option value="F" @if(old('sexe', $student->sexe)=='F') selected @endif>Féminin</option>
                 </select>
             </div>
             <div>

@@ -29,9 +29,6 @@ class PaymentController extends Controller
                 $q->where('classe', $request->classe);
             });
         }
-        if ($request->filled('type_frais')) {
-            $query->where('fee_type_id', $request->type_frais);
-        }
         if ($request->filled('mois')) {
             $query->whereMonth('date_paiement', substr($request->mois, 5, 2))
                   ->whereYear('date_paiement', substr($request->mois, 0, 4));

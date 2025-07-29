@@ -5,9 +5,8 @@
     <title>Dashboard d'administration</title>
     @vite('resources/css/app.css')
 </head>
-@stack('scripts')
-</body>
 <body class="bg-gray-100 font-sans min-h-screen">
+
     <div class="flex">
         <!-- Sidebar -->
         <div class="sidebar w-64 bg-blue-700 text-white h-screen fixed top-0 left-0 p-4 shadow-lg">
@@ -26,5 +25,6 @@
             @yield('content')
         </div>
     </div>
+@stack('scripts')
 </body>
 </html>

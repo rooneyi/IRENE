@@ -9,7 +9,6 @@ return new class extends Migration {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('eleve_id')->constrained('students')->onDelete('cascade');
-            $table->foreignId('fee_type_id')->constrained('fee_types')->onDelete('cascade');
             $table->decimal('montant', 10, 2);
             $table->date('date_paiement');
             $table->enum('statut', ['Payé', 'En attente', 'Incomplet'])->default('En attente');

@@ -49,8 +49,8 @@
                 <label class="block mb-2 text-blue-700 font-semibold">Sexe</label>
                 <select name="sexe" required class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white text-blue-900">
                     <option value="">-- Sélectionner --</option>
-                    <option value="Masculin" @if(old('sexe')=='Masculin') selected @endif>Masculin</option>
-                    <option value="Féminin" @if(old('sexe')=='Féminin') selected @endif>Féminin</option>
+                    <option value="M" @if(old('sexe')=='Masculin') selected @endif>Masculin</option>
+                    <option value="F" @if(old('sexe')=='Féminin') selected @endif>Féminin</option>
                 </select>
             </div>
             <div>
@@ -58,8 +58,8 @@
                 <input type="date" name="date_naissance" value="{{ old('date_naissance') }}" required class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white text-blue-900" />
             </div>
             <div>
-                <label class="block mb-2 text-blue-700 font-semibold">Téléphone</label>
-                <input type="text" name="telephone" value="{{ old('telephone') }}" required class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white text-blue-900" />
+                <label class="block mb-2 text-blue-700 font-semibold">Téléphone tuteur</label>
+                <input type="text" name="telephone_tuteur" value="{{ old('telephone_tuteur') }}" required class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white text-blue-900" />
             </div>
             <div>
                 <label class="block mb-2 text-blue-700 font-semibold">Adresse</label>

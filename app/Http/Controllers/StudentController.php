@@ -27,7 +27,7 @@ class StudentController extends Controller
             'classe' => 'required',
             'sexe' => 'required',
             'date_naissance' => 'required',
-            'telephone' => 'required',
+            'telephone_tuteur' => 'required',
             'adresse' => 'required',
             'section_id' => 'required|exists:fee_types,id',
         ]);
@@ -54,7 +54,7 @@ class StudentController extends Controller
         $student->section_id = $request->section_id;
         $student->sexe = $request->sexe;
         $student->date_naissance = $request->date_naissance;
-        $student->telephone = $request->telephone;
+        $student->telephone_tuteur = $request->telephone_tuteur;
         $student->adresse = $request->adresse;
         $student->total_a_payer = $montants[$request->section_id] ?? 0;
         $student->save();
