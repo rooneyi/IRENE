@@ -13,6 +13,7 @@ class StudentFactory extends Factory
         return [
             'nom' => $this->faker->lastName(),
             'prenom' => $this->faker->firstName(),
+            'post_nom' => $this->faker->lastName(),
             'matricule' => strtoupper($this->faker->unique()->bothify('MAT###??')),
             'classe' => $this->faker->randomElement(['6ème', '5ème', '4ème', '3ème', '2nde', '1ère', 'Terminale']),
             'date_naissance' => $this->faker->date('Y-m-d', '-10 years'),

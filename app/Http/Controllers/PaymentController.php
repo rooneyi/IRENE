@@ -42,15 +42,13 @@ class PaymentController extends Controller
     public function create()
     {
         $students = \App\Models\Student::orderBy('nom')->get();
-        $feeTypes = \App\Models\FeeType::all();
-        return view('payments.create', compact('students', 'feeTypes'));
+        return view('payments.create', compact('students'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'eleve_id' => 'required|exists:students,id',
-            'fee_type_id' => 'required|exists:fee_types,id',
             'montant' => 'required|numeric|min:0',
             'date_paiement' => 'required|date',
             'statut' => 'required|in:Payé,En attente,Incomplet',
@@ -59,7 +57,6 @@ class PaymentController extends Controller
 
         // Vérifier doublon (même élève, type de frais, mois)
         $doublon = Payment::where('eleve_id', $request->eleve_id)
-            ->where('fee_type_id', $request->fee_type_id)
             ->whereMonth('date_paiement', date('m', strtotime($request->date_paiement)))
             ->whereYear('date_paiement', date('Y', strtotime($request->date_paiement)))
             ->first();
@@ -69,7 +66,6 @@ class PaymentController extends Controller
 
         $payment = Payment::create([
             'eleve_id' => $request->eleve_id,
-            'fee_type_id' => $request->fee_type_id,
             'montant' => $request->montant,
             'date_paiement' => $request->date_paiement,
             'statut' => $request->statut,
@@ -107,22 +103,20 @@ class PaymentController extends Controller
 
     public function show(Payment $payment)
     {
-        $payment->load(['student', 'feeType', 'agent']);
+        $payment->load(['student', 'agent']);
         return view('payments.show', compact('payment'));
     }
 
     public function edit(Payment $payment)
     {
         $students = \App\Models\Student::orderBy('nom')->get();
-        $feeTypes = \App\Models\FeeType::all();
-        return view('payments.edit', compact('payment', 'students', 'feeTypes'));
+        return view('payments.edit', compact('payment', 'students'));
     }
 
     public function update(Request $request, Payment $payment)
     {
         $request->validate([
             'eleve_id' => 'required|exists:students,id',
-            'fee_type_id' => 'required|exists:fee_types,id',
             'montant' => 'required|numeric|min:0',
             'date_paiement' => 'required|date',
             'statut' => 'required|in:Payé,En attente,Incomplet',
@@ -130,7 +124,6 @@ class PaymentController extends Controller
         ]);
         $payment->update([
             'eleve_id' => $request->eleve_id,
-            'fee_type_id' => $request->fee_type_id,
             'montant' => $request->montant,
             'date_paiement' => $request->date_paiement,
             'statut' => $request->statut,
@@ -161,14 +154,14 @@ class PaymentController extends Controller
 
     public function receipt(Payment $payment)
     {
-        $payment->load(['student', 'feeType', 'agent']);
+        $payment->load(['student', 'agent']);
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('payments.show', compact('payment'));
         return $pdf->download('recu_paiement_'.$payment->id.'.pdf');
     }
 
     public function showReceipt(Payment $payment)
     {
-        $payment->load(['student', 'feeType', 'agent']);
+        $payment->load(['student', 'agent']);
         return view('payments.receipt', compact('payment'));
     }
 }

@@ -32,10 +32,6 @@
             <span>{{ $payment->student->classe }}</span>
         </div>
         <div class="mb-4 flex justify-between">
-            <span class="font-semibold text-gray-700">Type de frais :</span>
-            <span>{{ $payment->feeType->nom }}</span>
-        </div>
-        <div class="mb-4 flex justify-between">
             <span class="font-semibold text-gray-700">Montant payé (USD/FC) :</span>
             @php
                 $montant = $payment->montant;

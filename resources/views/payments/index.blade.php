@@ -15,7 +15,6 @@
                 <tr>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Avatar</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Élève</th>
-                    <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Type de frais</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Montant ($/FC)</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Date</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Statut</th>
@@ -37,11 +36,10 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 text-gray-800 font-medium">{{ $payment->student->nom }} {{ $payment->student->prenom }}</td>
-                        <td class="px-6 py-4 text-gray-700">{{ $payment->feeType->nom }}</td>
                         <td class="px-6 py-4">
                             @php
                                 $montant = $payment->montant;
-                                $devise = $payment->devise ?? 'FC';
+                                $devise = $payment->devise ?? '$';
                             @endphp
                             <span class="font-semibold text-blue-700">{{ number_format($montant, 0, ',', ' ') }} {{ $devise }}</span>
                         </td>
