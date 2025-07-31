@@ -20,6 +20,8 @@ class AuthController extends Controller
             $user = Auth::user();
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard');
+            } elseif ($user->role === 'caissier') {
+                return redirect()->route('cashier.dashboard');
             } else {
                 return redirect()->route('user.dashboard');
             }
@@ -121,11 +123,6 @@ class AuthController extends Controller
         ));
     }
 
-    public function userDashboard()
-    {
-        return view('user');
-    }
-
     public function caissierDashboard()
     {
         if (!auth()->check() || auth()->user()->role !== 'caissier') {
@@ -154,5 +151,13 @@ class AuthController extends Controller
         // Récupérer les noms des sections
         $sections = \App\Models\FeeType::pluck('nom', 'id');
         return view('dashboard_caissier', compact('parClasse', 'parSection', 'sections'));
+    }
+
+    public function userDashboard()
+    {
+        if (!auth()->check() || auth()->user()->role !== 'user') {
+            abort(403, 'Accès refusé. Seuls les utilisateurs peuvent accéder à ce tableau de bord.');
+        }
+        return view('dashboard_user');
     }
 }

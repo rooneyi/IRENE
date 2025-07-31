@@ -23,12 +23,12 @@
                 <tr>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Avatar</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Nom</th>
+                    <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Post-Nom</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Prénom</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Classe</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Sexe</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Date de naissance</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Téléphone Tuteur</th>
-                    <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Statut</th>
                     <th class="px-6 py-3 border-b text-gray-900 font-semibold text-left">Actions</th>
                 </tr>
             </thead>
@@ -41,6 +41,7 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 text-gray-800 font-medium">{{ $student->nom }}</td>
+                        <td class="px-6 py-4 text-gray-800 font-medium">{{ $student->post_nom }}</td>
                         <td class="px-6 py-4 text-gray-800">{{ $student->prenom }}</td>
                         <td class="px-6 py-4 text-gray-700">{{ $student->classe }}</td>
                         <td class="px-6 py-4">
@@ -50,9 +51,7 @@
                             <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">{{ $student->date_naissance }}</span>
                         </td>
                         <td class="px-6 py-4 text-gray-700">{{ $student->telephone_tuteur }}</td>
-                        <td class="px-6 py-4">
-                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">{{ $student->statut }}</span>
-                        </td>
+
                         <td class="px-6 py-4 flex gap-2">
                             <a href="{{ route('students.edit', $student) }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition-colors font-semibold text-sm">Modifier</a>
                             <a href="{{ route('students.show', $student) }}" class="bg-green-400 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-500 transition-colors font-semibold text-sm">Voir</a>

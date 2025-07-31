@@ -4,24 +4,37 @@
     </div>
     <div class="h-full px-3 py-4 overflow-y-auto bg-white dark:bg-white">
         <ul class="space-y-2 font-medium">
-            <li class="mb-4 group @if(request()->routeIs('admin.dashboard')) bg-gray-50 @else hover:bg-gray-50 transition-colors @endif">
-                <a class="flex items-center no-underline py-2 px-4 block text-blue-700 @if(!request()->routeIs('admin.dashboard')) group-hover:text-indigo-700 @endif" href="{{ route('admin.dashboard') }}">
+            <li class="mb-4 group @if(request()->routeIs('admin.dashboard') || request()->routeIs('cashier.dashboard') || request()->routeIs('user.dashboard')) bg-gray-50 @else hover:bg-gray-50 transition-colors @endif">
+                <a class="flex items-center no-underline py-2 px-4 block text-blue-700 @if(!request()->routeIs('admin.dashboard') && !request()->routeIs('cashier.dashboard') && !request()->routeIs('user.dashboard')) group-hover:text-indigo-700 @endif" href="
+                    @if(auth()->user()->role === 'admin')
+                        {{ route('admin.dashboard') }}
+                    @elseif(auth()->user()->role === 'caissier')
+                        {{ route('cashier.dashboard') }}
+                    @else
+                        {{ route('user.dashboard') }}
+                    @endif
+                ">
                     <svg class="w-5 h-5 mr-2 text-blue-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     Tableau de bord
                 </a>
             </li>
+            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'caissier')
             <li class="mb-4 group @if(request()->routeIs('payments.*')) bg-gray-50 @else hover:bg-gray-50 transition-colors @endif">
                 <a class="flex items-center no-underline py-2 px-4 block text-blue-700 @if(!request()->routeIs('payments.*')) group-hover:text-indigo-700 @endif" href="{{ route('payments.index') }}">
                     <svg class="w-5 h-5 mr-2 text-blue-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 9V7a5 5 0 00-10 0v2M5 20h14a2 2 0 002-2v-5a2 2 0 00-2-2H5a2 2 0 00-2 2v5a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     Paiements
                 </a>
             </li>
+            @endif
+            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'caissier')
             <li class="mb-4 group @if(request()->routeIs('students.*')) bg-gray-50 @else hover:bg-gray-50 transition-colors @endif">
                 <a class="flex items-center no-underline py-2 px-4 block text-blue-700 @if(!request()->routeIs('students.*')) group-hover:text-indigo-700 @endif" href="{{ route('students.index') }}">
                     <svg class="w-5 h-5 mr-2 text-blue-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     Élèves
                 </a>
             </li>
+            @endif
+            @if(auth()->user()->role === 'admin')
             <li class="mb-4 group @if(request()->routeIs('users.*')) bg-gray-50 @else hover:bg-gray-50 transition-colors @endif">
                 <a class="flex items-center no-underline py-2 px-4 block text-blue-700 @if(!request()->routeIs('users.*')) group-hover:text-indigo-700 @endif" href="{{ route('users.index') }}">
                     <svg class="w-5 h-5 mr-2 text-blue-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M16 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -38,6 +51,13 @@
                 <a class="flex items-center no-underline py-2 px-4 block text-blue-700 @if(!request()->routeIs('logs.*')) group-hover:text-indigo-700 @endif" href="{{ route('logs.index') }}">
                     <svg class="w-5 h-5 mr-2 text-blue-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 17v-6h6v6m2 4H7a2 2 0 01-2-2V7a2 2 0 012-2h5l2 2h5a2 2 0 012 2v10a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     Journal / Logs
+                </a>
+            </li>
+            @endif
+            <li class="mb-4 group">
+                <a class="flex items-center no-underline py-2 px-4 block text-red-600 hover:text-red-800" href="{{ route('logout') }}">
+                    <svg class="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Déconnexion
                 </a>
             </li>
         </ul>

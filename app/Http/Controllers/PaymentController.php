@@ -94,6 +94,9 @@ class PaymentController extends Controller
         if (!$payment->mois_payes) {
             $student = Student::findOrFail($request->eleve_id);
             $moisEtudes = \App\Models\Setting::where('key', 'mois_etudes')->value('value') ?? [];
+            if (!is_array($moisEtudes)) {
+                $moisEtudes = json_decode($moisEtudes, true) ?: [];
+            }
             $moisPayes = [];
             foreach ($student->payments as $p) {
                 if ($p->mois_payes) {
@@ -172,6 +175,9 @@ class PaymentController extends Controller
         if (!$payment->mois_payes) {
             $student = Student::findOrFail($request->eleve_id);
             $moisEtudes = \App\Models\Setting::where('key', 'mois_etudes')->value('value') ?? [];
+            if (!is_array($moisEtudes)) {
+                $moisEtudes = json_decode($moisEtudes, true) ?: [];
+            }
             $moisPayes = [];
             foreach ($student->payments as $p) {
                 if ($p->mois_payes) {

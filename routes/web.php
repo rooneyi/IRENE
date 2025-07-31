@@ -16,6 +16,7 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/admin', [AuthController::class, 'adminDashboard'])->name('admin.dashboard');
+    Route::get('/caissier', [AuthController::class, 'caissierDashboard'])->name('cashier.dashboard');
     Route::get('/user', [AuthController::class, 'userDashboard'])->name('user.dashboard');
 
     // Paiements

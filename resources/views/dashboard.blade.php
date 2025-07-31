@@ -14,7 +14,7 @@
             </div>
             <div class="bg-white rounded-lg shadow p-6 text-center hover:bg-gray-100 transition-colors">
                 <h3 class="text-blue-700 font-semibold mb-2">Montant total encaissé</h3>
-                <span class="text-2xl font-bold text-blue-700">{{ number_format($montantTotal ?? 0, 0, ',', ' ') }} F</span>
+                <span class="text-2xl font-bold text-blue-700">{{ number_format($montantTotal ?? 0, 0, ',', ' ') }} $</span>
             </div>
             <div class="bg-white rounded-lg shadow p-6 text-center hover:bg-gray-100 transition-colors">
                 <h3 class="text-blue-700 font-semibold mb-2">Nombre de classes</h3>
