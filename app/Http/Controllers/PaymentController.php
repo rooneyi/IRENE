@@ -11,6 +11,10 @@ class PaymentController extends Controller
 {
     public function index(Request $request)
     {
+        $user = auth()->user();
+        if (!$user || !in_array($user->role, ['admin', 'caissier'])) {
+            abort(403, 'Accès refusé.');
+        }
         // Récupérer toutes les classes distinctes
         $classes = Student::select('classe')->distinct()->pluck('classe');
         $feeTypes = FeeType::all();
@@ -41,6 +45,10 @@ class PaymentController extends Controller
 
     public function create()
     {
+        $user = auth()->user();
+        if (!$user || $user->role !== 'caissier') {
+            abort(403, 'Accès refusé. Seul le caissier peut effectuer cette action.');
+        }
         $students = \App\Models\Student::orderBy('nom')->get();
         $sections = \App\Models\FeeType::all(['id', 'nom', 'montant_par_defaut']);
         return view('payments.create', compact('students', 'sections'));
@@ -48,6 +56,10 @@ class PaymentController extends Controller
 
     public function store(Request $request)
     {
+        $user = auth()->user();
+        if (!$user || $user->role !== 'caissier') {
+            abort(403, 'Accès refusé. Seul le caissier peut effectuer cette action.');
+        }
         $request->validate([
             'eleve_id' => 'required|exists:students,id',
             'montant' => 'required|numeric|min:0',
@@ -114,12 +126,20 @@ class PaymentController extends Controller
 
     public function show(Payment $payment)
     {
+        $user = auth()->user();
+        if (!$user || !in_array($user->role, ['admin', 'caissier'])) {
+            abort(403, 'Accès refusé.');
+        }
         $payment->load(['student', 'agent']);
         return view('payments.show', compact('payment'));
     }
 
     public function edit(Payment $payment)
     {
+        $user = auth()->user();
+        if (!$user || $user->role !== 'caissier') {
+            abort(403, 'Accès refusé. Seul le caissier peut effectuer cette action.');
+        }
         $students = \App\Models\Student::orderBy('nom')->get();
         $sections = \App\Models\FeeType::all(['id', 'nom', 'montant_par_defaut']);
         return view('payments.edit', compact('payment', 'students', 'sections'));
@@ -127,6 +147,10 @@ class PaymentController extends Controller
 
     public function update(Request $request, Payment $payment)
     {
+        $user = auth()->user();
+        if (!$user || $user->role !== 'caissier') {
+            abort(403, 'Accès refusé. Seul le caissier peut effectuer cette action.');
+        }
         $request->validate([
             'eleve_id' => 'required|exists:students,id',
             'montant' => 'required|numeric|min:0',
@@ -178,6 +202,10 @@ class PaymentController extends Controller
 
     public function destroy(Payment $payment)
     {
+        $user = auth()->user();
+        if (!$user || $user->role !== 'caissier') {
+            abort(403, 'Accès refusé. Seul le caissier peut effectuer cette action.');
+        }
         $payment->delete();
         // Journaliser l'action
         \App\Models\Log::create([
@@ -191,6 +219,10 @@ class PaymentController extends Controller
 
     public function receipt(Payment $payment)
     {
+        $user = auth()->user();
+        if (!$user || !in_array($user->role, ['admin', 'caissier'])) {
+            abort(403, 'Accès refusé.');
+        }
         $payment->load(['student', 'agent']);
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('payments.show', compact('payment'));
         return $pdf->download('recu_paiement_'.$payment->id.'.pdf');
@@ -198,6 +230,10 @@ class PaymentController extends Controller
 
     public function showReceipt(Payment $payment)
     {
+        $user = auth()->user();
+        if (!$user || !in_array($user->role, ['admin', 'caissier'])) {
+            abort(403, 'Accès refusé.');
+        }
         $payment->load(['student', 'agent']);
         return view('payments.receipt', compact('payment'));
     }

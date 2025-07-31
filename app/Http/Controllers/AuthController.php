@@ -36,7 +36,7 @@ class AuthController extends Controller
     public function adminDashboard()
     {
         if (!auth()->check() || auth()->user()->role !== 'admin') {
-            return redirect()->route('login')->with('error', 'Accès refusé.');
+            abort(403, 'Accès refusé. Seul l\'administrateur peut accéder au tableau de bord.');
         }
 
         // Statistiques globales
@@ -77,6 +77,9 @@ class AuthController extends Controller
         $eleves = \App\Models\Student::with('payments')->get();
         // Synthèse des mois payés et restants par élève
         $moisEtudes = \App\Models\Setting::where('key', 'mois_etudes')->value('value') ?? [];
+        if (!is_array($moisEtudes)) {
+            $moisEtudes = json_decode($moisEtudes, true) ?: [];
+        }
         $recapPaiementEleves = $eleves->map(function($eleve) use ($totalAPayer, $moisRepartition, $moisEtudes) {
             $totalPaye = $eleve->payments()->where('statut', 'Payé')->sum('montant');
             $resteAPayer = max(0, $totalAPayer - $totalPaye);
@@ -121,5 +124,35 @@ class AuthController extends Controller
     public function userDashboard()
     {
         return view('user');
+    }
+
+    public function caissierDashboard()
+    {
+        if (!auth()->check() || auth()->user()->role !== 'caissier') {
+            abort(403, 'Accès refusé. Seul le caissier peut accéder à ce tableau de bord.');
+        }
+        // Nombre d'élèves ayant payé par classe
+        $parClasse = \App\Models\Student::select('classe')
+            ->withCount(['payments as paiements_payes_count' => function($q) {
+                $q->where('statut', 'Payé');
+            }])
+            ->get()
+            ->groupBy('classe')
+            ->map(function($eleves) {
+                return $eleves->sum('paiements_payes_count');
+            });
+        // Nombre d'élèves ayant payé par section
+        $parSection = \App\Models\Student::select('section_id')
+            ->withCount(['payments as paiements_payes_count' => function($q) {
+                $q->where('statut', 'Payé');
+            }])
+            ->get()
+            ->groupBy('section_id')
+            ->map(function($eleves) {
+                return $eleves->sum('paiements_payes_count');
+            });
+        // Récupérer les noms des sections
+        $sections = \App\Models\FeeType::pluck('nom', 'id');
+        return view('dashboard_caissier', compact('parClasse', 'parSection', 'sections'));
     }
 }

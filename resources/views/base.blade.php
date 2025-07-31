@@ -23,7 +23,10 @@
             <div class="flex items-center gap-4">
                 @auth
                     <span class="text-blue-700 font-semibold">{{ auth()->user()->name }}</span>
-                    <a href="{{ route('logout') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shadow transition">Déconnexion</a>
+                    <a href="{{ route('logout') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shadow transition flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1" /></svg>
+                        Déconnexion
+                    </a>
                 @endauth
             </div>
         </header>

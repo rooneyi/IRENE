@@ -10,6 +10,10 @@ class SettingsController extends Controller
 {
     public function index()
     {
+        $user = auth()->user();
+        if (!$user || $user->role !== 'admin') {
+            abort(403, 'Accès refusé. Seul l\'administrateur peut accéder aux paramètres.');
+        }
         // Affichage de la page des paramètres système
         $totalAPayer = \App\Models\Student::query()->value('total_a_payer');
         $moisRepartition = \App\Models\Student::query()->value('mois_repartition');

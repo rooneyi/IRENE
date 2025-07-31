@@ -4,10 +4,12 @@
 <div class="container mx-auto px-4 py-6">
     <h2 class="text-3xl font-extrabold mb-8 text-gray-900 tracking-tight text-center">Liste des paiements</h2>
     <div class="flex justify-end mb-6">
-        <a href="{{ route('payments.create') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white px-5 py-2.5 rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-800 transition font-semibold text-base">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-            Nouveau paiement
-        </a>
+        @if(auth()->user() && auth()->user()->role === 'caissier')
+            <a href="{{ route('payments.create') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white px-5 py-2.5 rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-800 transition font-semibold text-base">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                Nouveau paiement
+            </a>
+        @endif
     </div>
     <div class="overflow-x-auto rounded-lg shadow-lg">
         <table class="min-w-full bg-white border border-gray-200 rounded-lg">
@@ -54,7 +56,9 @@
                         <td class="px-6 py-4 text-gray-700">{{ $payment->mois_payes ?? '-' }}</td>
                         <td class="px-6 py-4 flex gap-2">
                             <a href="{{ route('payments.show', $payment->id) }}" class="text-blue-600 hover:text-blue-900" title="Voir"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></a>
-                            <a href="{{ route('payments.edit', $payment->id) }}" class="text-yellow-600 hover:text-yellow-900" title="Modifier"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h2m-1 0v14m-7-7h14" /></svg></a>
+                            @if(auth()->user() && auth()->user()->role === 'caissier')
+                                <a href="{{ route('payments.edit', $payment->id) }}" class="text-yellow-600 hover:text-yellow-900" title="Modifier"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h2m-1 0v14m-7-7h14" /></svg></a>
+                            @endif
                         </td>
                         <td class="px-6 py-4">
                             <a href="{{ route('payments.showReceipt', $payment->id) }}" class="text-green-600 hover:text-green-900" title="Voir le reçu">

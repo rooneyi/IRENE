@@ -32,9 +32,9 @@
                 <select name="role" required class="w-full border border-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 bg-gray-50 text-gray-900">
                     <option value="">-- Sélectionner --</option>
                     <option value="admin" @if(old('role')=='admin') selected @endif>Administrateur</option>
+                    <option value="caissier" @if(old('role')=='caissier') selected @endif>Caissier</option>
                     <option value="user" @if(old('role')=='user') selected @endif>Utilisateur</option>
-                    <option value="saisie" @if(old('role')=='saisie') selected @endif>Saisie</option>
-                    <option value="lecture" @if(old('role')=='lecture') selected @endif>Lecture seule</option>
+
                 </select>
             </div>
             <div class="flex items-center gap-4 mt-8 justify-center">
