@@ -13,7 +13,7 @@
                 </ul>
             </div>
         @endif
-        <form method="POST" action="{{ route('students.store') }}" class="space-y-6">
+        <form method="POST" action="{{ route('students.store') }}" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             @csrf
             <div>
                 <label class="block mb-2 text-blue-700 font-semibold">Nom</label>
@@ -65,9 +65,9 @@
                 <label class="block mb-2 text-blue-700 font-semibold">Adresse</label>
                 <input type="text" name="adresse" value="{{ old('adresse') }}" required class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white text-blue-900" />
             </div>
-            <div class="flex items-center gap-4 mt-8 justify-center">
+            <div class="md:col-span-2 flex items-center gap-4 mt-8 justify-center">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-lg shadow-lg transition font-semibold">Enregistrer</button>
-                <a href="{{ route('students.index') }}" class="bg-white border border-blue-600 hover:bg-blue-600 hover:text-white text-blue-700 px-8 py-2.5 rounded-lg shadow-lg transition font-semibold">Annuler</a>
+                <a href="{{ route('students.index') }}" class="bg-gray-200 hover:bg-blue-600 hover:text-white text-blue-700 px-8 py-2.5 rounded-lg shadow-lg transition font-semibold">Annuler</a>
             </div>
         </form>
     </div>

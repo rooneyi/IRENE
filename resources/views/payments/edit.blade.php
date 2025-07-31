@@ -13,7 +13,7 @@
                 </ul>
             </div>
         @endif
-        <form method="POST" action="{{ route('payments.update', $payment->id) }}" class="space-y-6">
+        <form method="POST" action="{{ route('payments.update', $payment->id) }}" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             @csrf
             @method('PUT')
             <script>
@@ -56,9 +56,9 @@
                     <option value="USD" @if($payment->devise=='USD') selected @endif>Dollar ($)</option>
                 </select>
             </div>
-            <div class="flex items-center gap-4 mt-8 justify-center">
+            <div class="md:col-span-2 flex items-center gap-4 mt-8 justify-center">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-lg shadow-lg transition font-semibold">Enregistrer</button>
-                <a href="{{ route('payments.index') }}" class="bg-white border border-blue-600 hover:bg-blue-600 hover:text-white text-blue-700 px-8 py-2.5 rounded-lg shadow-lg transition font-semibold">Annuler</a>
+                <a href="{{ route('payments.index') }}" class="bg-gray-200 hover:bg-blue-600 hover:text-white text-blue-700 px-8 py-2.5 rounded-lg shadow-lg transition font-semibold">Annuler</a>
             </div>
         </form>
     </div>

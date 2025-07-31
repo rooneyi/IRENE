@@ -11,7 +11,7 @@
         <div class="hidden md:flex flex-col justify-center items-center bg-white w-1/2 p-10">
             <img src="/build/assets/logo.png" alt="Logo" class="w-32 h-32 mb-6 drop-shadow-lg">
             <h2 class="text-3xl font-extrabold text-blue-600 mb-2 tracking-tight">Bienvenue</h2>
-            <p class="text-blue-400 text-lg text-center">Connectez-vous à votre espace d'administration</p>
+            <p class="text-blue-400 text-lg text-center">Connectez-vous à votre espace </p>
         </div>
         <!-- Colonne droite : Formulaire -->
         <div class="flex-1 bg-blue-50 flex flex-col justify-center p-10">

@@ -13,7 +13,7 @@
                 </ul>
             </div>
         @endif
-        <form method="POST" action="{{ route('students.update', $student->id) }}" class="space-y-6">
+        <form method="POST" action="{{ route('students.update', $student->id) }}" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             @csrf
             @method('PUT')
             <div>
@@ -34,7 +34,7 @@
                         </option>
                     @endforeach
                 </select>
-                
+
             </div>
             <div>
                 <label class="block mb-2 text-blue-700 font-semibold">Classe</label>
@@ -63,7 +63,7 @@
                 <label class="block mb-2 text-yellow-600 font-semibold">Adresse</label>
                 <input type="text" name="adresse" value="{{ old('adresse', $student->adresse) }}" required class="w-full border border-yellow-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-200 bg-yellow-50 text-yellow-700" />
             </div>
-            <div class="flex items-center gap-4 mt-8 justify-center">
+            <div class="md:col-span-2 flex items-center gap-4 mt-8 justify-center">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-lg shadow-lg transition font-semibold">Enregistrer</button>
                 <a href="{{ route('students.index') }}" class="bg-gray-200 hover:bg-blue-600 hover:text-white text-blue-700 px-8 py-2.5 rounded-lg shadow-lg transition font-semibold">Annuler</a>
             </div>
@@ -104,4 +104,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
-
