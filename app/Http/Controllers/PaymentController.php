@@ -50,6 +50,7 @@ class PaymentController extends Controller
         $request->validate([
             'eleve_id' => 'required|exists:students,id',
             'montant' => 'required|numeric|min:0',
+            'devise' => 'required|in:FC,USD',
             'date_paiement' => 'required|date',
             'statut' => 'required|in:Payé,En attente,Incomplet',
             'remarque' => 'nullable|string',
@@ -67,6 +68,7 @@ class PaymentController extends Controller
         $payment = Payment::create([
             'eleve_id' => $request->eleve_id,
             'montant' => $request->montant,
+            'devise' => $request->devise,
             'date_paiement' => $request->date_paiement,
             'statut' => $request->statut,
             'agent_encaisseur' => auth()->id(),
@@ -84,7 +86,12 @@ class PaymentController extends Controller
             }
         }
         $moisNonPayes = array_values(array_diff($moisEtudes, $moisPayes));
-        $montantMensuel = $student->mois_repartition > 0 ? $student->total_a_payer / $student->mois_repartition : 0;
+        $montantMensuelFC = $student->mois_repartition > 0 ? $student->total_a_payer / $student->mois_repartition : 0;
+        if ($request->devise === 'USD') {
+            $montantMensuel = $montantMensuelFC / 2800;
+        } else {
+            $montantMensuel = $montantMensuelFC;
+        }
         $nbMois = ($montantMensuel > 0) ? floor($request->montant / $montantMensuel) : 0;
         $moisPourCePaiement = array_slice($moisNonPayes, 0, $nbMois);
         $payment->mois_payes = json_encode($moisPourCePaiement);
@@ -118,6 +125,7 @@ class PaymentController extends Controller
         $request->validate([
             'eleve_id' => 'required|exists:students,id',
             'montant' => 'required|numeric|min:0',
+            'devise' => 'required|in:FC,USD',
             'date_paiement' => 'required|date',
             'statut' => 'required|in:Payé,En attente,Incomplet',
             'remarque' => 'nullable|string',
@@ -125,6 +133,7 @@ class PaymentController extends Controller
         $payment->update([
             'eleve_id' => $request->eleve_id,
             'montant' => $request->montant,
+            'devise' => $request->devise,
             'date_paiement' => $request->date_paiement,
             'statut' => $request->statut,
             'remarque' => $request->remarque,

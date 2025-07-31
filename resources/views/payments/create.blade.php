@@ -1,4 +1,4 @@
-    @extends('admin')
+@extends('admin')
 
     @section('content')
     <div class="container mx-auto max-w-lg py-8">
@@ -79,28 +79,32 @@
             const students = @json($students);
             document.querySelector('select[name="eleve_id"]').addEventListener('change', updateMoisPayes);
             document.querySelector('input[name="montant"]').addEventListener('input', updateMoisPayes);
+            document.querySelector('select[name="devise"]').addEventListener('change', updateMoisPayes);
             document.getElementById('mois_payes').value = '';
             function updateMoisPayes() {
                 const eleveId = document.querySelector('select[name="eleve_id"]').value;
                 const montant = parseFloat(document.querySelector('input[name="montant"]').value) || 0;
+                const devise = document.querySelector('select[name="devise"]').value;
                 if (!eleveId || montant <= 0) {
                     document.getElementById('mois_payes').value = '';
                     return;
                 }
                 const eleve = students.find(s => s.id == eleveId);
                 if (!eleve) return;
-                const montantMensuel = eleve.mois_repartition > 0 ? eleve.total_a_payer / eleve.mois_repartition : 0;
+                let montantMensuel = eleve.mois_repartition > 0 ? eleve.total_a_payer / eleve.mois_repartition : 0;
+                if (devise === 'USD') {
+                    montantMensuel = montantMensuel / 2800;
+                }
                 if (montantMensuel <= 0) {
                     document.getElementById('mois_payes').value = '';
                     return;
                 }
                 const moisCouverts = Math.floor(montant / montantMensuel);
-                // Générer la liste des mois non encore payés (exemple: ['Janvier', 'Février', ...])
                 fetch(`/api/eleve/${eleveId}/mois-non-payes`)
                     .then(r => r.json())
                     .then(moisNonPayes => {
-                        const moisARegler = moisNonPayes.slice(0, moisCouverts);
-                        document.getElementById('mois_payes').value = moisARegler.join(', ');
+                        const moisPayes = moisNonPayes.slice(0, moisCouverts).join(', ');
+                        document.getElementById('mois_payes').value = moisPayes;
                     });
             }
             </script>

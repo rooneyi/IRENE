@@ -24,6 +24,7 @@ class StudentController extends Controller
         $request->validate([
             'nom' => 'required',
             'prenom' => 'required',
+            'post_nom' => 'required',
             'classe' => 'required',
             'sexe' => 'required',
             'date_naissance' => 'required',
@@ -49,6 +50,7 @@ class StudentController extends Controller
         $student = new \App\Models\Student();
         $student->nom = $request->nom;
         $student->prenom = $request->prenom;
+        $student->post_nom = $request->post_nom;
         $student->matricule = $matricule;
         $student->classe = $request->classe;
         $student->section_id = $request->section_id;
@@ -73,6 +75,7 @@ class StudentController extends Controller
         $request->validate([
             'nom' => 'required',
             'prenom' => 'required',
+            'post_nom' => 'required',
             'matricule' => 'required|unique:students,matricule,'.$student->id,
             'classe' => 'required',
             'section_id' => 'required',
