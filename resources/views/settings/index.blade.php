@@ -1,4 +1,4 @@
-        @extends('admin')
+@extends('admin')
 
         @section('content')
         <div class="container max-w-xl mx-auto mt-10">
@@ -21,7 +21,7 @@
                         <select name="mois_etudes[]" id="mois_etudes" class="w-full border rounded px-3 py-2" multiple required onchange="updateMoisRepartition()">
                             @php
                                 $mois = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-                                $moisSelectionnes = old('mois_etudes', isset($moisEtudes) ? $moisEtudes : []);
+                                $moisSelectionnes = old('mois_etudes', isset($moisEtudes) ? (is_array($moisEtudes) ? $moisEtudes : json_decode($moisEtudes, true)) : []);
                             @endphp
                             @foreach($mois as $m)
                                 <option value="{{ $m }}" @if(in_array($m, $moisSelectionnes)) selected @endif>{{ $m }}</option>

@@ -75,18 +75,26 @@ class SettingsController extends Controller
     public function updateFees(Request $request)
     {
         $request->validate([
-            'total_a_payer' => 'required|numeric|min:0',
             'mois_repartition' => 'required|integer|min:1|max:12',
             'mois_etudes' => 'required|array|min:1',
+            'sections' => 'required|array|min:1',
+            'sections.*.name' => 'required|string',
+            'sections.*.montant' => 'required|numeric|min:0',
         ]);
-        \App\Models\Student::query()->update([
-            'total_a_payer' => $request->total_a_payer,
-            'mois_repartition' => $request->mois_repartition,
-        ]);
+
+        Setting::updateOrCreate(
+            ['key' => 'mois_repartition'],
+            ['value' => $request->mois_repartition]
+        );
         Setting::updateOrCreate(
             ['key' => 'mois_etudes'],
-            ['value' => $request->mois_etudes]
+            ['value' => json_encode($request->mois_etudes)]
         );
+        Setting::updateOrCreate(
+            ['key' => 'sections'],
+            ['value' => json_encode($request->sections)]
+        );
+
         return back()->with('success', 'Configuration des frais mise à jour avec succès.');
     }
 }
