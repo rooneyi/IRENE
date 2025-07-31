@@ -42,7 +42,8 @@ class PaymentController extends Controller
     public function create()
     {
         $students = \App\Models\Student::orderBy('nom')->get();
-        return view('payments.create', compact('students'));
+        $sections = \App\Models\FeeType::all(['id', 'nom', 'montant_par_defaut']);
+        return view('payments.create', compact('students', 'sections'));
     }
 
     public function store(Request $request)
@@ -74,28 +75,31 @@ class PaymentController extends Controller
             'agent_encaisseur' => auth()->id(),
             'numero_recu' => uniqid('REC'),
             'remarque' => $request->remarque,
+            'mois_payes' => $request->filled('mois_payes') ? $request->mois_payes : null,
         ]);
 
-        // Attribution automatique des mois payés
-        $student = Student::findOrFail($request->eleve_id);
-        $moisEtudes = \App\Models\Setting::where('key', 'mois_etudes')->value('value') ?? [];
-        $moisPayes = [];
-        foreach ($student->payments as $p) {
-            if ($p->mois_payes) {
-                $moisPayes = array_merge($moisPayes, json_decode($p->mois_payes, true));
+        // Si aucun mois n'est envoyé, fallback sur le calcul automatique (sécurité)
+        if (!$payment->mois_payes) {
+            $student = Student::findOrFail($request->eleve_id);
+            $moisEtudes = \App\Models\Setting::where('key', 'mois_etudes')->value('value') ?? [];
+            $moisPayes = [];
+            foreach ($student->payments as $p) {
+                if ($p->mois_payes) {
+                    $moisPayes = array_merge($moisPayes, json_decode($p->mois_payes, true));
+                }
             }
+            $moisNonPayes = array_values(array_diff($moisEtudes, $moisPayes));
+            $montantMensuelFC = $student->mois_repartition > 0 ? $student->total_a_payer / $student->mois_repartition : 0;
+            if ($request->devise === 'USD') {
+                $montantMensuel = $montantMensuelFC / 2800;
+            } else {
+                $montantMensuel = $montantMensuelFC;
+            }
+            $nbMois = ($montantMensuel > 0) ? floor($request->montant / $montantMensuel) : 0;
+            $moisPourCePaiement = array_slice($moisNonPayes, 0, $nbMois);
+            $payment->mois_payes = json_encode($moisPourCePaiement);
+            $payment->save();
         }
-        $moisNonPayes = array_values(array_diff($moisEtudes, $moisPayes));
-        $montantMensuelFC = $student->mois_repartition > 0 ? $student->total_a_payer / $student->mois_repartition : 0;
-        if ($request->devise === 'USD') {
-            $montantMensuel = $montantMensuelFC / 2800;
-        } else {
-            $montantMensuel = $montantMensuelFC;
-        }
-        $nbMois = ($montantMensuel > 0) ? floor($request->montant / $montantMensuel) : 0;
-        $moisPourCePaiement = array_slice($moisNonPayes, 0, $nbMois);
-        $payment->mois_payes = json_encode($moisPourCePaiement);
-        $payment->save();
 
         // Journaliser l'action
         \App\Models\Log::create([
@@ -117,7 +121,8 @@ class PaymentController extends Controller
     public function edit(Payment $payment)
     {
         $students = \App\Models\Student::orderBy('nom')->get();
-        return view('payments.edit', compact('payment', 'students'));
+        $sections = \App\Models\FeeType::all(['id', 'nom', 'montant_par_defaut']);
+        return view('payments.edit', compact('payment', 'students', 'sections'));
     }
 
     public function update(Request $request, Payment $payment)
@@ -137,7 +142,30 @@ class PaymentController extends Controller
             'date_paiement' => $request->date_paiement,
             'statut' => $request->statut,
             'remarque' => $request->remarque,
+            'mois_payes' => $request->filled('mois_payes') ? $request->mois_payes : null,
         ]);
+        // Si aucun mois n'est envoyé, fallback sur le calcul automatique (sécurité)
+        if (!$payment->mois_payes) {
+            $student = Student::findOrFail($request->eleve_id);
+            $moisEtudes = \App\Models\Setting::where('key', 'mois_etudes')->value('value') ?? [];
+            $moisPayes = [];
+            foreach ($student->payments as $p) {
+                if ($p->mois_payes) {
+                    $moisPayes = array_merge($moisPayes, json_decode($p->mois_payes, true));
+                }
+            }
+            $moisNonPayes = array_values(array_diff($moisEtudes, $moisPayes));
+            $montantMensuelFC = $student->mois_repartition > 0 ? $student->total_a_payer / $student->mois_repartition : 0;
+            if ($request->devise === 'USD') {
+                $montantMensuel = $montantMensuelFC / 2800;
+            } else {
+                $montantMensuel = $montantMensuelFC;
+            }
+            $nbMois = ($montantMensuel > 0) ? floor($request->montant / $montantMensuel) : 0;
+            $moisPourCePaiement = array_slice($moisNonPayes, 0, $nbMois);
+            $payment->mois_payes = json_encode($moisPourCePaiement);
+            $payment->save();
+        }
         // Journaliser l'action
         \App\Models\Log::create([
             'user_id' => auth()->id(),

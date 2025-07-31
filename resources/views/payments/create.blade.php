@@ -15,6 +15,54 @@
             @endif
             <form method="POST" action="{{ route('payments.store') }}" class="space-y-6">
                 @csrf
+                <script>
+                    // Injection des sections et montants pour le JS
+                    const sections = @json($sections);
+                    const students = @json($students);
+
+                    function updateMoisPayes() {
+                        const eleveId = document.querySelector('select[name="eleve_id"]').value;
+                        const montant = parseFloat(document.querySelector('input[name="montant"]').value) || 0;
+                        const devise = document.querySelector('select[name="devise"]').value;
+                        if (!eleveId || montant <= 0) {
+                            document.getElementById('mois_payes').value = '';
+                            return;
+                        }
+                        const eleve = students.find(s => s.id == eleveId);
+                        if (!eleve) return;
+                        // On récupère le montant mensuel de la section de l'élève
+                        const section = sections.find(sec => sec.id == eleve.section_id);
+                        let montantMensuel = section ? section.montant_par_defaut : 0;
+                        if (devise === 'USD') {
+                            montantMensuel = montantMensuel / 2800;
+                        }
+                        if (montantMensuel <= 0) {
+                            document.getElementById('mois_payes').value = '';
+                            return;
+                        }
+                        const moisCouverts = Math.floor(montant / montantMensuel);
+                        fetch(`/api/eleve/${eleveId}/mois-non-payes`)
+                            .then(r => r.json())
+                            .then(moisNonPayes => {
+                                const moisPayes = moisNonPayes.slice(0, moisCouverts);
+                                document.getElementById('mois_payes').value = moisPayes.join(', ');
+                                // On ajoute aussi les valeurs dans un champ caché pour l'envoyer au backend
+                                let hidden = document.getElementById('mois_payes_hidden');
+                                if (!hidden) {
+                                    hidden = document.createElement('input');
+                                    hidden.type = 'hidden';
+                                    hidden.name = 'mois_payes';
+                                    hidden.id = 'mois_payes_hidden';
+                                    document.querySelector('form').appendChild(hidden);
+                                }
+                                hidden.value = JSON.stringify(moisPayes);
+                            });
+                    }
+
+                    document.querySelector('select[name="eleve_id"]').addEventListener('change', updateMoisPayes);
+                    document.querySelector('input[name="montant"]').addEventListener('input', updateMoisPayes);
+                    document.querySelector('select[name="devise"]').addEventListener('change', updateMoisPayes);
+                </script>
                 <div>
                     <label class="block mb-2 text-blue-700 font-semibold">Élève</label>
                     <select id="eleve-select" name="eleve_id" required class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white text-blue-900">
@@ -74,38 +122,4 @@
             </form>
         </div>
     </div>
-    <script>
-            // Récupération dynamique des mois à payer
-            const students = @json($students);
-            document.querySelector('select[name="eleve_id"]').addEventListener('change', updateMoisPayes);
-            document.querySelector('input[name="montant"]').addEventListener('input', updateMoisPayes);
-            document.querySelector('select[name="devise"]').addEventListener('change', updateMoisPayes);
-            document.getElementById('mois_payes').value = '';
-            function updateMoisPayes() {
-                const eleveId = document.querySelector('select[name="eleve_id"]').value;
-                const montant = parseFloat(document.querySelector('input[name="montant"]').value) || 0;
-                const devise = document.querySelector('select[name="devise"]').value;
-                if (!eleveId || montant <= 0) {
-                    document.getElementById('mois_payes').value = '';
-                    return;
-                }
-                const eleve = students.find(s => s.id == eleveId);
-                if (!eleve) return;
-                let montantMensuel = eleve.mois_repartition > 0 ? eleve.total_a_payer / eleve.mois_repartition : 0;
-                if (devise === 'USD') {
-                    montantMensuel = montantMensuel / 2800;
-                }
-                if (montantMensuel <= 0) {
-                    document.getElementById('mois_payes').value = '';
-                    return;
-                }
-                const moisCouverts = Math.floor(montant / montantMensuel);
-                fetch(`/api/eleve/${eleveId}/mois-non-payes`)
-                    .then(r => r.json())
-                    .then(moisNonPayes => {
-                        const moisPayes = moisNonPayes.slice(0, moisCouverts).join(', ');
-                        document.getElementById('mois_payes').value = moisPayes;
-                    });
-            }
-            </script>
     @endsection

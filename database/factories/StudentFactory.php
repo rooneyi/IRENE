@@ -10,26 +10,51 @@ class StudentFactory extends Factory
 
     public function definition(): array
     {
+        // Sections et classes associées
         $sections = [
-            1 => 'Maternelle',
-            2 => 'Primaire',
-            3 => 'Secondaire général',
-            4 => 'Technique',
+            'Maternelle' => [
+                'id' => 1,
+                'classes' => ['1ère maternelle', '2ème maternelle', '3ème maternelle'],
+                'montant' => 40,
+            ],
+            'Primaire' => [
+                'id' => 2,
+                'classes' => ['1ère primaire', '2ème primaire', '3ème primaire', '4ème primaire', '5ème primaire', '6ème primaire'],
+                'montant' => 45,
+            ],
+            'Secondaire général' => [
+                'id' => 3,
+                'classes' => ['1ère secondaire', '2ème secondaire', '3ème secondaire', '4ème secondaire', '5ème secondaire', '6ème secondaire'],
+                'montant' => 65,
+            ],
+            'Technique' => [
+                'id' => 4,
+                'classes' => ['1ère technique', '2ème technique', '3ème technique', '4ème technique', '5ème technique', '6ème technique'],
+                'montant' => 95,
+            ],
         ];
-        $section_id = $this->faker->randomElement(array_keys($sections));
+        $sectionName = $this->faker->randomElement(array_keys($sections));
+        $section = $sections[$sectionName];
+        $classe = $this->faker->randomElement($section['classes']);
+        $mois = 12;
+        // Noms congolais réalistes
+        $noms = ['Mwamba', 'Kabasele', 'Mutombo', 'Tshibola', 'Ilunga', 'Kasongo', 'Kabeya', 'Mbuyi', 'Lutumba', 'Makiese'];
+        $prenoms = ['Patrick', 'Chantal', 'Junior', 'Prisca', 'Grace', 'Fabrice', 'Esther', 'Blaise', 'Sarah', 'Emmanuel'];
+        $post_noms = ['Ilunga', 'Mbuyi', 'Kasongo', 'Kabeya', 'Lutumba', 'Makiese', 'Kalala', 'Ngoy', 'Mundele', 'Banza'];
         return [
-            'nom' => $this->faker->lastName(),
-            'prenom' => $this->faker->firstName(),
-            'post_nom' => $this->faker->lastName(),
-            'matricule' => strtoupper($this->faker->unique()->bothify('MAT###??')),
-            'classe' => $this->faker->randomElement(['6ème', '5ème', '4ème', '3ème', '2nde', '1ère', 'Terminale']),
-            'section_id' => $section_id,
+            'nom' => $this->faker->randomElement($noms),
+            'prenom' => $this->faker->randomElement($prenoms),
+            'post_nom' => $this->faker->randomElement($post_noms),
+            'matricule' => strtoupper($this->faker->unique()->bothify('MAT2025####')),
+            'classe' => $classe,
+            'section_id' => $section['id'],
             'date_naissance' => $this->faker->date('Y-m-d', '-10 years'),
             'sexe' => $this->faker->randomElement(['M', 'F']),
             'adresse' => $this->faker->address(),
-            'tuteur' => $this->faker->name(),
-            'telephone_tuteur' => $this->faker->phoneNumber(),
+            'tuteur' => $this->faker->randomElement($noms) . ' ' . $this->faker->randomElement($prenoms),
+            'telephone_tuteur' => '099' . $this->faker->numberBetween(1000000, 9999999),
+            'total_a_payer' => $section['montant'] * $mois,
+            'mois_repartition' => $mois,
         ];
     }
 }
-

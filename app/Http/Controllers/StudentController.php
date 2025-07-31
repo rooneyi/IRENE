@@ -173,6 +173,10 @@ class StudentController extends Controller
     {
         $student = \App\Models\Student::findOrFail($id);
         $moisEtudes = \App\Models\Setting::where('key', 'mois_etudes')->value('value') ?? [];
+        // Correction : décoder si c'est une chaîne JSON
+        if (is_string($moisEtudes)) {
+            $moisEtudes = json_decode($moisEtudes, true) ?? [];
+        }
         $moisPayes = [];
         foreach ($student->payments as $payment) {
             if ($payment->mois_payes) {
